@@ -21,7 +21,7 @@
 --- 
 ![screenshot of sample](https://pictures.s3.yandex.net/resources/S01_131_1649172105.png)
 
-## Примеры запросов к API, варианты ответов и ошибок приведены в спецификации openapi.yml
+## Примеры запросов к API, варианты ответов и ошибок приведены в спецификации *openapi.yml*
 
 ## **Автор**
 Владимир Васильев | [chem1sto](https://github.com/chem1sto)
