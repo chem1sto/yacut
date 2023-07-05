@@ -15,19 +15,15 @@
             {{ form.original_link(class="form-control form-control-lg py-2 mb-3", id='form-original-link', placeholder="Длинная ссылка") }}
             <div>
               <div>
-                {% if form.original_link.errors %}
-                  {% for error in form.original_link.errors %}
-                    <p><span style="color:red">{{ error }}</span></p>
-                  {% endfor %}
-                {% endif %}
+                {% for error in form.original_link.errors %}
+                  <p><span style="color:red">{{ error }}</span></p>
+                {% endfor %}
               </div>
               {{ form.custom_id(class="form-control form-control-lg py-2 mb-3", id='form-custom-id', placeholder="Ваш вариант короткой ссылки") }}
               <div>
-                {% if form.custom_id.errors %}
-                  {% for error in form.custom_id.errors %}
-                    <p><span style="color:red">{{ error }}</span></p>
-                  {% endfor %}
-                {% endif %}
+                {% for error in form.custom_id.errors %}
+                  <p><span style="color:red">{{ error }}</span></p>
+                {% endfor %}
               </div>
               {{ form.submit(class="btn btn-primary") }}
             </div>
@@ -36,19 +32,22 @@
         <div class="col-sm"></div>
       </div>
     </div>
-
     <div class="container">
       <div class="row ">
         <div class="col-sm"></div>
         <div class="col-sm">
-          <p class="text-center">
-            <h5 class="text-center">
-            {% for category, message in get_flashed_messages(with_categories=true) %}
-              {% if category == "url" %}<a href="{{ message }}">{{ message }}</a>
-              {% else %}{{ message }}{% endif %}
-            {% endfor %}
-            </h5>
-          </p>
+          <h5 class="text-center">
+            {% with messages = get_flashed_messages() %}
+              {% if messages %}
+                {% for message in messages %}
+                  {{ message }}
+                {% endfor %}
+              {% endif %}
+            {% endwith %}
+            {% if form.custom_id.data %}
+              <a href="{{ url_for('redirection_view', short=form.custom_id.data, _external=True) }}">{{ url_for('redirection_view', short=form.custom_id.data, _external=True) }}</a>
+            {% endif %}
+          </h5>
         </div>
         <div class="col-sm"></div>
       </div>

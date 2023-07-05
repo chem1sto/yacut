@@ -1,8 +1,12 @@
 import os
+from string import ascii_letters, digits
 
 
 API_ORIGINAL = 'url'
-API_SHORT = 'custom_id'
+API_SHORT = 'short_link'
+ALPHABET = ascii_letters + digits
+ORIGINAL = 'original_link'
+SHORT = 'custom_id'
 BASE_URL = f'http://{os.getenv("HOST", "localhost")}'
 CUSTOM_ID_AUTO_LENGTH = 6
 CUSTOM_ID_MAX_LENGTH = 16
