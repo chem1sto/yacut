@@ -84,7 +84,7 @@ class URLMap(Model_PK, TimestampMixin):
             raise InvalidAPIUsage(EMPTY_ERROR_MESSAGE)
         original, short = data.get(API_ORIGINAL), data.get(SHORT)
         if not original:
-            raise InvalidAPIUsage(USAGE_NO_URL_ERROR_MESSAGE)
+            raise InvalidAPIUsage(NO_URL_ERROR_MESSAGE)
         if not short:
             short = URLMap.get_unique_short_id(URLMap, cls.short)
         elif (
