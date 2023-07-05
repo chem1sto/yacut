@@ -15,7 +15,7 @@ INVALID_CUSTOM_ID_ERROR_MESSAGE = (
 EMPTY_ERROR_MESSAGE = 'Отсутствует тело запроса'
 EXISTING_SHORT_ID_ERROR_MESSAGE = 'Имя "{short_id}" уже занято.'
 NO_ID_ERROR_MESSAGE = 'Указанный id не найден'
-USAGE_NO_URL_ERROR_MESSAGE = '"url" является обязательным полем!'
+NO_URL_ERROR_MESSAGE = '"url" является обязательным полем!'
 
 
 class Model_PK(db.Model):
