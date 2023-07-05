@@ -19,7 +19,7 @@ NO_URL_ERROR_MESSAGE = '"url" является обязательным поле
 
 
 class Model_PK(db.Model):
-    """Абстрактный класс-для создания поля id в модели URLMap"""
+    """Абстрактный класс-для создания поля id в модели URLMap."""
     __abstract__ = True
     id = db.Column(
         db.Integer,
@@ -28,7 +28,7 @@ class Model_PK(db.Model):
 
 
 class TimestampMixin:
-    """Класс-миксин для создания поля timestamp в модели URLMap"""
+    """Класс-миксин для создания поля timestamp в модели URLMap."""
     timestamp = db.Column(
         db.DateTime,
         default=dt.utcnow
