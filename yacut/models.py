@@ -12,11 +12,6 @@ from .settings import (
     SHORT_AUTO_LENGTH, SHORT_MAX_LENGTH
 )
 
-EXISTING_SHORT_ID_ERROR_MESSAGE = 'Имя "{short}" уже занято.'
-INVALID_SHORT_ERROR_MESSAGE = (
-    'Указано недопустимое имя для короткой ссылки'
-)
-
 
 class URLMap(db.Model):
     """Класс для создания модели URLMap."""
