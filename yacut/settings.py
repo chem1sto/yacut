@@ -1,5 +1,4 @@
 import os
-# from re import escape
 from string import ascii_letters, digits
 
 API_ORIGINAL = 'url'
