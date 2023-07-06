@@ -2,7 +2,7 @@ from http import HTTPStatus
 
 
 class InvalidAPIUsage(Exception):
-    """Класс для вывода кастомной ошибки."""
+    """Класс для вывода кастомной ошибки InvalidAPIUsage."""
     status_code = HTTPStatus.BAD_REQUEST
 
     def __init__(self, message, status_code=None):
@@ -15,8 +15,8 @@ class InvalidAPIUsage(Exception):
         return dict(message=self.message)
 
 
-class InvalidFormUsage(TypeError, ValueError):
-    """Класс для вывода кастомной ошибки."""
+class InvalidFormUsage(ValueError):
+    """Класс для вывода кастомной ошибки InvalidFormUsage."""
     status_code = HTTPStatus.BAD_REQUEST
 
     def __init__(self, message, status_code=None):

@@ -11,9 +11,9 @@ CUSTOM_ID_INVALID_SYMBOLS_MESSAGE = (
     '''
     В поле для короткой ссылки введены недопустимые символы.
     Разрешены следующие символы:
-    - большие латинские буквы,
-    - маленькие латинские буквы,
-    - цифры в диапазоне от 0 до 9
+    большие латинские буквы,
+    маленькие латинские буквы,
+    цифры в диапазоне от 0 до 9
     '''
 )
 CUSTOM_ID_LINK_LABEL = 'Ваш вариант короткой ссылки'
@@ -65,7 +65,6 @@ class YaCutForm(FlaskForm):
         Метод экземпляра класса YaCut
         для проверки наличия в БД полученного custom_id.
         """
-        # if URLMap.query.filter_by(short=custom_id_field.data).first():
         if URLMap.get(custom_id_field.data):
             raise ValidationError(CUSTOM_ID_EXISTING_ERROR_MESSAGE.format(
                 custom_id=custom_id_field.data

@@ -1,14 +1,12 @@
-from flask import abort, redirect, render_template, url_for
 from http import HTTPStatus
 
+from flask import abort, flash, redirect, render_template, url_for
+
 from . import app
+from .exceptions import InvalidFormUsage
 from .forms import YaCutForm
 from .models import URLMap
 from .settings import MAIN_PAGE, REDIRECTION_VIEW
-from .exceptions import InvalidFormUsage
-
-SHORT_LINK_IS_READY = 'Ваша новая ссылка готова:'
-ERROR_MESSAGE = 'Что-то пошло не так: {errors}'
 
 
 @app.route('/', methods=('GET', 'POST'))
@@ -35,8 +33,9 @@ def index_view():
                 _external=True
             )
         )
-    except (TypeError, ValueError) as errors:
-        raise InvalidFormUsage(ERROR_MESSAGE.format(errors=errors))
+    except (LookupError, ValueError) as errors:
+        flash(InvalidFormUsage(errors))
+        return render_template(MAIN_PAGE, form=form)
 
 
 @app.route('/<string:short>')
