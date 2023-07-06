@@ -36,18 +36,17 @@
       <div class="row ">
         <div class="col-sm"></div>
         <div class="col-sm">
+          {% with messages = get_flashed_messages() %}
+            {% for message in messages %}
+              {{ message }}
+            {% endfor %}
+          {% endwith %}
+          {% if url %}
           <h5 class="text-center">
-            {% with messages = get_flashed_messages() %}
-              {% if messages %}
-                {% for message in messages %}
-                  {{ message }}
-                {% endfor %}
-              {% endif %}
-            {% endwith %}
-            {% if form.custom_id.data %}
-              <a href="{{ url_for('redirection_view', short=form.custom_id.data, _external=True) }}">{{ url_for('redirection_view', short=form.custom_id.data, _external=True) }}</a>
-            {% endif %}
+            Ваша новая ссылка готова:
+            <a href="{{ url }}">{{ url }}</a>
           </h5>
+          {% endif %}
         </div>
         <div class="col-sm"></div>
       </div>

@@ -1,9 +1,10 @@
-from flask import flash, redirect, render_template
+from flask import abort, redirect, render_template, url_for
+from http import HTTPStatus
 
-from . import app, db
+from . import app
 from .forms import YaCutForm
 from .models import URLMap
-from .settings import MAIN_PAGE
+from .settings import MAIN_PAGE, REDIRECTION_VIEW
 
 SHORT_LINK_IS_READY = 'Ваша новая ссылка готова:'
 
@@ -19,16 +20,27 @@ def index_view():
     """
     form = YaCutForm()
     if not form.validate_on_submit():
-        form.custom_id.data = None
         return render_template(MAIN_PAGE, form=form)
-    if not form.custom_id.data:
-        form.custom_id.data = URLMap.get_unique_short_id(URLMap, URLMap.short)
-    URLMap().create(db, form.data, api=False).short
-    flash(SHORT_LINK_IS_READY)
-    return render_template(MAIN_PAGE, form=form)
+    try:
+        url_map = URLMap.create(
+            URLMap,
+            original=form.original_link.data,
+            short=form.custom_id.data
+        )
+    except Exception as error:
+        raise error
+    form.custom_id.data = url_map.short
+    return render_template(
+        MAIN_PAGE,
+        form=form,
+        url=url_for(REDIRECTION_VIEW, short=url_map.short, _external=True)
+    )
 
 
 @app.route('/<string:short>')
 def redirection_view(short):
     """View-функция для переадресации пользователя по короткой ссылке."""
-    return redirect(URLMap.get_original_link(short))
+    url_map = URLMap.get(URLMap, short)
+    if url_map is not None:
+        return redirect(url_map.original)
+    abort(HTTPStatus.NOT_FOUND)
