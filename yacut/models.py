@@ -1,20 +1,12 @@
 from datetime import datetime as dt
 from random import sample
-from re import findall
-from urllib.parse import urljoin
 
 from flask import url_for
 
 from . import db
-from .exceptions import InvalidAPIUsage
-from .settings import (ALPHABET, API_ORIGINAL, API_SHORT,
-                       NO_URL_ERROR_MESSAGE, PATTERN, REPEAT, REDIRECTION_VIEW,
-                       SHORT_AUTO_LENGTH, SHORT_MAX_LENGTH)
-
-INVALID_CUSTOM_ID_ERROR_MESSAGE = (
-    'Указано недопустимое имя для короткой ссылки'
-)
-EXISTING_SHORT_ID_ERROR_MESSAGE = 'Имя "{short_id}" уже занято.'
+from .settings import (ALPHABET, API_ORIGINAL, API_SHORT, ORIGINAL_SIZE_MAX,
+                       REDIRECTION_VIEW, REPEAT, SHORT_AUTO_LENGTH,
+                       SHORT_MAX_LENGTH)
 
 
 class URLMap(db.Model):
@@ -24,7 +16,7 @@ class URLMap(db.Model):
         primary_key=True
     )
     original = db.Column(
-        db.String,
+        db.String(ORIGINAL_SIZE_MAX),
         nullable=False
     )
     short = db.Column(
@@ -52,29 +44,16 @@ class URLMap(db.Model):
         о конкретном экземпляре класса URLMap в виде словаря."""
         return {
             API_ORIGINAL: self.original,
-            API_SHORT: urljoin(
-                url_for(
-                    REDIRECTION_VIEW, short=self.short, _external=True
-                ), self.short
+            API_SHORT: url_for(
+                REDIRECTION_VIEW, short=self.short, _external=True
             )
         }
 
-    def create(self, original, short):
+    def create(original, short):
         """Метод экземпляра класса URLMap для создания новой записи в БД."""
-        if not original:
-            raise InvalidAPIUsage(NO_URL_ERROR_MESSAGE)
         if not short:
-            short = URLMap.get_unique_short_id(URLMap, short)
-        elif (
-            len(short) > SHORT_MAX_LENGTH or
-            not bool(findall(PATTERN, short))
-        ):
-            raise InvalidAPIUsage(INVALID_CUSTOM_ID_ERROR_MESSAGE)
-        elif URLMap.query.filter(self.short == short).count():
-            raise InvalidAPIUsage(EXISTING_SHORT_ID_ERROR_MESSAGE.format(
-                short_id=short
-            ))
-        url_map = self(
+            short = URLMap.get_unique_short_id()
+        url_map = URLMap(
             original=original,
             short=short
         )
@@ -83,21 +62,21 @@ class URLMap(db.Model):
         return url_map
 
     @staticmethod
-    def get(cls, short_id):
+    def get(short):
         """
         Метод класса URLMap для получения оригинальной ссылки
         по её короткой ассоциации.
         """
-        return cls.query.filter_by(short=short_id).first()
+        return URLMap.query.filter_by(short=short).first()
 
     @staticmethod
-    def get_unique_short_id(cls, field):
+    def get_unique_short_id():
         """
         Статический метод класса URLMap
         для генерации уникальной короткой ссылки.
         """
         for _ in range(REPEAT):
             short = ''.join(sample(ALPHABET, SHORT_AUTO_LENGTH))
-            if not cls.query.filter(field == short).count():
+            if not URLMap.get(short):
                 break
         return short

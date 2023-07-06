@@ -4,7 +4,7 @@ from wtforms.validators import (URL, InputRequired, Length, Optional, Regexp,
                                 ValidationError)
 
 from .models import URLMap
-from .settings import SHORT_MAX_LENGTH, PATTERN
+from .settings import ORIGINAL_SIZE_MAX, SHORT_MAX_LENGTH, PATTERN
 
 CUSTOM_ID_EXISTING_ERROR_MESSAGE = 'Имя {custom_id} уже занято!'
 CUSTOM_ID_INVALID_SYMBOLS_MESSAGE = (
@@ -36,6 +36,10 @@ class YaCutForm(FlaskForm):
         label=ORIGINAL_LINK_LABEL,
         validators=[
             InputRequired(message=OBLIGITARY_FIELD),
+            Length(
+                max=ORIGINAL_SIZE_MAX,
+                message=ORIGINAL_LINK_MAX_LENGTH_MESSAGE
+            ),
             URL(message=INVALID_LINK_FORMAT)
         ]
     )
@@ -47,7 +51,10 @@ class YaCutForm(FlaskForm):
                 max=SHORT_MAX_LENGTH,
                 message=CUSTOM_ID_MAX_LENGTH_MESSAGE
             ),
-            Regexp(PATTERN, message=CUSTOM_ID_INVALID_SYMBOLS_MESSAGE),
+            Regexp(
+                regex=PATTERN,
+                message=CUSTOM_ID_INVALID_SYMBOLS_MESSAGE
+            ),
             Optional()
         ]
     )
@@ -58,7 +65,8 @@ class YaCutForm(FlaskForm):
         Метод экземпляра класса YaCut
         для проверки наличия в БД полученного custom_id.
         """
-        if URLMap.query.filter_by(short=custom_id_field.data).first():
+        # if URLMap.query.filter_by(short=custom_id_field.data).first():
+        if URLMap.get(custom_id_field.data):
             raise ValidationError(CUSTOM_ID_EXISTING_ERROR_MESSAGE.format(
                 custom_id=custom_id_field.data
             ))

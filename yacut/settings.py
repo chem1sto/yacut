@@ -1,9 +1,10 @@
 import os
+from re import escape
 from string import ascii_letters, digits
 
 API_ORIGINAL = 'url'
 API_SHORT = 'short_link'
-ALPHABET = ascii_letters + digits
+ALPHABET = escape(ascii_letters + digits)
 ORIGINAL = 'original_link'
 SHORT = 'custom_id'
 DEFAULT_APP = 'yacut'
@@ -11,12 +12,11 @@ DEFAULT_ENV = 'development'
 DEFAULT_SECRET_KEY = '123456'
 DEFAULT_DATABASE = 'sqlite:///db.sqlite3'
 DEFAULT_PORT = 5000
-LINK_SIZE_MIN = 10
+ORIGINAL_SIZE_MAX = 2048
 MAIN_PAGE = 'index.html'
-NO_URL_ERROR_MESSAGE = '"url" является обязательным полем!'
 PATTERN = rf'^[{ALPHABET}]*$'
 PORT = os.getenv('PORT', DEFAULT_PORT)
-REPEAT = 20
+REPEAT = len(ALPHABET)
 REDIRECTION_VIEW = 'redirection_view'
 SHORT_AUTO_LENGTH = 6
 SHORT_MAX_LENGTH = 16
