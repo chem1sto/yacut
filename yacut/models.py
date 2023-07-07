@@ -19,7 +19,9 @@ AUTO_SHORT_VALUE_ERROR = (
 ORIGINAL_VALUE_ERROR_MESSAGE = (
     '{original} не является корректной url-ссылкой.'
 )
-
+ORIGINAL_LENGTH_ERROR_MESSAGE = (
+    'Длина оригинальной ссылки больше допустимого значения.'
+)
 SHORT_VALUE_ERROR_MESSAGE = (
     'Короткая ссылка {short} слишком длинная или содержит недопустимые символы.'
 )
@@ -72,12 +74,15 @@ class URLMap(db.Model):
         - При отсутвии короткой ссылки - вызов функции для её генерации;
         - При получении raw_data - валидация полученных данных.
         """
-        if not url(original):
-            raise InvalidOriginalLinkError(
-                ORIGINAL_VALUE_ERROR_MESSAGE.format(
-                    original=original
+        if len(original) > ORIGINAL_SIZE_MAX:
+            raise InvalidOriginalLinkError(ORIGINAL_LENGTH_ERROR_MESSAGE)
+        if raw_data:
+            if not url(original):
+                raise InvalidOriginalLinkError(
+                    ORIGINAL_VALUE_ERROR_MESSAGE.format(
+                        original=original
+                    )
                 )
-            )
         if raw_data and short:
             if (
                 len(short) > SHORT_MAX_LENGTH or
