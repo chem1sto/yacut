@@ -3,7 +3,6 @@ from http import HTTPStatus
 from flask import abort, flash, redirect, render_template, url_for
 
 from . import app
-from .exceptions import InvalidFormUsage
 from .forms import YaCutForm
 from .models import URLMap
 from .settings import MAIN_PAGE, REDIRECTION_VIEW
@@ -33,8 +32,8 @@ def index_view():
                 _external=True
             )
         )
-    except (TypeError, ValueError) as errors:
-        flash(InvalidFormUsage(errors))
+    except (TypeError, ValueError) as error:
+        flash(error)
         return render_template(MAIN_PAGE, form=form)
 
 

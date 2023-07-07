@@ -13,6 +13,9 @@ from .settings import (
     REPEAT_TIMES, SHORT_AUTO_LENGTH, SHORT_MAX_LENGTH
 )
 
+AUTO_SHORT_VALUE_ERROR = (
+    'Не удалось создать уникальную короткую ссылку.'
+)
 ORIGINAL_VALUE_ERROR_MESSAGE = (
     '{original} не является корректной url-ссылкой.'
 )
@@ -63,16 +66,13 @@ class URLMap(db.Model):
             )
         }
 
-    def create(original, short, auto_generate_short_flag=False, raw_data=False):
+    def create(original, short, raw_data=False):
         """
         Создания новой записи в БД:
         - При отсутвии короткой ссылки - вызов функции для её генерации;
         - При получении raw_data - валидация полученных данных.
         """
-        if not short:
-            auto_generate_short_flag = True
-            short = URLMap.get_unique_short_id()
-        if raw_data and not auto_generate_short_flag:
+        if raw_data and short:
             if not url(original):
                 raise InvalidOriginalLinkError(
                     ORIGINAL_VALUE_ERROR_MESSAGE.format(
@@ -90,6 +90,8 @@ class URLMap(db.Model):
                 raise ExistingShortLinkError(LOOKUP_ERROR_MESSAGE.format(
                     short=short
                 ))
+        if not short:
+            short = URLMap.get_unique_short_id()
         url_map = URLMap(
             original=original,
             short=short
@@ -114,5 +116,4 @@ class URLMap(db.Model):
             short = ''.join(sample(ALLOWED_SYMBOLS, SHORT_AUTO_LENGTH))
             if URLMap.get(short) is None:
                 return short
-        else:
-            return None
+        raise ValueError(AUTO_SHORT_VALUE_ERROR)
