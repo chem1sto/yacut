@@ -1,15 +1,27 @@
 from datetime import datetime as dt
-
 from random import choice
 from re import findall
 
 from flask import url_for
+from validators import url
 
 from . import db
+from .exceptions import InvalidOriginalLink
 from .settings import (
     ALLOWED_SYMBOLS, API_ORIGINAL, API_SHORT,
     ORIGINAL_SIZE_MAX, PATTERN, REDIRECTION_VIEW,
-    SHORT_AUTO_LENGTH, SHORT_MAX_LENGTH
+    REPEAT_TIMES, SHORT_AUTO_LENGTH, SHORT_MAX_LENGTH
+)
+
+ORIGINAL_VALUE_ERROR_MESSAGE = (
+    '{original} не является корректной url-ссылкой.'
+)
+
+SHORT_VALUE_ERROR_MESSAGE = (
+    'Короткая ссылка {short} слишком длинная или содержит недопустимые символы.'
+)
+LOOKUP_ERROR_MESSAGE = (
+    'Короткая ссылка {short} уже есть в базе данных.'
 )
 
 
@@ -54,17 +66,26 @@ class URLMap(db.Model):
             )
         }
 
-    def create(original, short):
+    def create(original, short, clean=True):
         """Метод экземпляра класса URLMap для создания новой записи в БД."""
-        if not short or short == '' or short is None:
+        if not short:
             short = URLMap.get_unique_short_id()
-        if (
-            len(short) > SHORT_MAX_LENGTH or
-            not bool(findall(PATTERN, short))
-        ):
-            raise ValueError
-        if URLMap.get(short):
-            raise LookupError
+        if not clean:
+            if not url(original):
+                raise InvalidOriginalLink(ORIGINAL_VALUE_ERROR_MESSAGE.format(
+                    original=original
+                ))
+            if (
+                len(short) > SHORT_MAX_LENGTH or
+                not bool(findall(PATTERN, short))
+            ):
+                raise ValueError(SHORT_VALUE_ERROR_MESSAGE.format(
+                    short=short
+                ))
+            if URLMap.get(short):
+                raise LookupError(LOOKUP_ERROR_MESSAGE.format(
+                    short=short
+                ))
         url_map = URLMap(
             original=original,
             short=short
@@ -76,7 +97,8 @@ class URLMap(db.Model):
     @staticmethod
     def get(short):
         """
-        Метод класса URLMap для проверки наличия короткой ссылки в БД.
+        Статический метод класса URLMap URLMap
+        для проверки наличия короткой ссылки в БД.
         """
         return URLMap.query.filter_by(short=short).first()
 
@@ -86,8 +108,8 @@ class URLMap(db.Model):
         Статический метод класса URLMap
         для генерации уникальной короткой ссылки.
         """
-        short = ''.join(choice(
-            ALLOWED_SYMBOLS) for _ in range(SHORT_AUTO_LENGTH))
-        if URLMap.get(short) is None:
-            return short
-        return URLMap.get_unique_short_id()
+        for time in range(REPEAT_TIMES):
+            short = ''.join(choice(
+                ALLOWED_SYMBOLS) for _ in range(SHORT_AUTO_LENGTH))
+            if URLMap.get(short) is None:
+                return short

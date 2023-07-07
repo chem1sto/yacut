@@ -1,4 +1,5 @@
 import os
+from re import escape
 from string import ascii_letters, digits
 
 API_ORIGINAL = 'url'
@@ -13,9 +14,10 @@ DEFAULT_DATABASE = 'sqlite:///db.sqlite3'
 DEFAULT_PORT = 5000
 ORIGINAL_SIZE_MAX = 2048
 MAIN_PAGE = 'index.html'
-PATTERN = rf'^[{ALLOWED_SYMBOLS}]*$'
+PATTERN = rf'^[{escape(ALLOWED_SYMBOLS)}]*$'
 PORT = os.getenv('PORT', DEFAULT_PORT)
 REDIRECTION_VIEW = 'redirection_view'
+REPEAT_TIMES = 20
 SHORT_AUTO_LENGTH = 6
 SHORT_MAX_LENGTH = 16
 

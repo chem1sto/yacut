@@ -3,10 +3,11 @@ from http import HTTPStatus
 from flask import abort, flash, redirect, render_template, url_for
 
 from . import app
-from .exceptions import InvalidFormUsage
 from .forms import YaCutForm
 from .models import URLMap
 from .settings import MAIN_PAGE, REDIRECTION_VIEW
+
+ERROR_MESSAGE = 'Что-то пошло не так.'
 
 
 @app.route('/', methods=('GET', 'POST'))
@@ -33,8 +34,8 @@ def index_view():
                 _external=True
             )
         )
-    except (LookupError, ValueError) as errors:
-        flash(InvalidFormUsage(errors))
+    except (LookupError, ValueError):
+        flash(ERROR_MESSAGE)
         return render_template(MAIN_PAGE, form=form)
 
 

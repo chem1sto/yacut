@@ -3,12 +3,15 @@ from http import HTTPStatus
 from flask import jsonify, request
 
 from . import app
-from .exceptions import InvalidAPIUsage
+from .exceptions import InvalidOriginalLink, InvalidAPIUsage
 from .models import URLMap
 from .settings import API_ORIGINAL, SHORT
 
 EXISTING_SHORT_ID_ERROR_MESSAGE = 'Имя "{short}" уже занято.'
 EMPTY_ERROR_MESSAGE = 'Отсутствует тело запроса'
+INVALID_ORIGINAL_ERROR_MESSAGE = (
+    'Указано недопустимое имя для оригинальной ссылки'
+)
 INVALID_SHORT_ERROR_MESSAGE = (
     'Указано недопустимое имя для короткой ссылки'
 )
@@ -28,9 +31,14 @@ def add_short_link():
         return jsonify(
             URLMap.create(
                 original=data.get(API_ORIGINAL),
-                short=data.get(SHORT)
+                short=data.get(SHORT),
+                clean=False
             ).to_dict()
         ), HTTPStatus.CREATED
+    except InvalidOriginalLink:
+        raise InvalidAPIUsage(
+            INVALID_ORIGINAL_ERROR_MESSAGE, HTTPStatus.BAD_REQUEST
+        )
     except ValueError:
         raise InvalidAPIUsage(
             INVALID_SHORT_ERROR_MESSAGE, HTTPStatus.BAD_REQUEST
