@@ -1,5 +1,5 @@
 from datetime import datetime as dt
-from random import choice
+from random import sample
 from re import findall
 
 from flask import url_for
@@ -63,13 +63,16 @@ class URLMap(db.Model):
             )
         }
 
-    def create(original, short, raw_data=False):
+    def create(original, short, auto_generate_short_flag=False, raw_data=False):
         """
         Создания новой записи в БД:
         - При отсутвии короткой ссылки - вызов функции для её генерации;
         - При получении raw_data - валидация полученных данных.
         """
-        if raw_data and short:
+        if not short:
+            auto_generate_short_flag = True
+            short = URLMap.get_unique_short_id()
+        if raw_data and not auto_generate_short_flag:
             if not url(original):
                 raise InvalidOriginalLinkError(
                     ORIGINAL_VALUE_ERROR_MESSAGE.format(
@@ -87,8 +90,6 @@ class URLMap(db.Model):
                 raise ExistingShortLinkError(LOOKUP_ERROR_MESSAGE.format(
                     short=short
                 ))
-        if not short:
-            short = URLMap.get_unique_short_id()
         url_map = URLMap(
             original=original,
             short=short
@@ -110,7 +111,8 @@ class URLMap(db.Model):
         Генерация уникальной короткой ссылки.
         """
         for time in range(REPEAT_TIMES):
-            short = ''.join(choice(
-                ALLOWED_SYMBOLS) for _ in range(SHORT_AUTO_LENGTH))
+            short = ''.join(sample(ALLOWED_SYMBOLS, SHORT_AUTO_LENGTH))
             if URLMap.get(short) is None:
                 return short
+        else:
+            return None
