@@ -3,7 +3,8 @@ from http import HTTPStatus
 from flask import jsonify, request
 
 from . import app
-from .exceptions import InvalidOriginalLink, InvalidAPIUsage
+from .exceptions import (ExistingShortLinkError, InvalidAPIUsage,
+                         InvalidOriginalLinkError)
 from .models import URLMap
 from .settings import API_ORIGINAL, SHORT
 
@@ -32,10 +33,10 @@ def add_short_link():
             URLMap.create(
                 original=data.get(API_ORIGINAL),
                 short=data.get(SHORT),
-                clean=False
+                raw_data=True
             ).to_dict()
         ), HTTPStatus.CREATED
-    except InvalidOriginalLink:
+    except InvalidOriginalLinkError:
         raise InvalidAPIUsage(
             INVALID_ORIGINAL_ERROR_MESSAGE, HTTPStatus.BAD_REQUEST
         )
@@ -43,7 +44,7 @@ def add_short_link():
         raise InvalidAPIUsage(
             INVALID_SHORT_ERROR_MESSAGE, HTTPStatus.BAD_REQUEST
         )
-    except LookupError:
+    except ExistingShortLinkError:
         raise InvalidAPIUsage(EXISTING_SHORT_ID_ERROR_MESSAGE.format(
             short=data.get(SHORT)
         ), HTTPStatus.BAD_REQUEST)

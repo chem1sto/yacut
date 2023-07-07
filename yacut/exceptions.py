@@ -2,7 +2,6 @@ from http import HTTPStatus
 
 
 class InvalidAPIUsage(Exception):
-    """Класс кастомной ошибки InvalidAPIUsage."""
     status_code = HTTPStatus.BAD_REQUEST
 
     def __init__(self, message, status_code=None):
@@ -15,6 +14,9 @@ class InvalidAPIUsage(Exception):
         return dict(message=self.message)
 
 
-class InvalidOriginalLink(Exception):
-    """Класс кастомной ошибки InvalidOriginalLink."""
+class ExistingShortLinkError(Exception):
+    pass
+
+
+class InvalidOriginalLinkError(Exception):
     pass

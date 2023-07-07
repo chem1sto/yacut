@@ -7,8 +7,6 @@ from .forms import YaCutForm
 from .models import URLMap
 from .settings import MAIN_PAGE, REDIRECTION_VIEW
 
-ERROR_MESSAGE = 'Что-то пошло не так.'
-
 
 @app.route('/', methods=('GET', 'POST'))
 def index_view():
@@ -34,8 +32,9 @@ def index_view():
                 _external=True
             )
         )
-    except (LookupError, ValueError):
-        flash(ERROR_MESSAGE)
+    except (TypeError, ValueError):
+        flash(str(TypeError))
+        flash(str(ValueError))
         return render_template(MAIN_PAGE, form=form)
 
 
