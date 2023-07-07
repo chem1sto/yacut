@@ -31,7 +31,6 @@ ORIGINAL_LINK_MAX_LENGTH_MESSAGE = (
 
 
 class YaCutForm(FlaskForm):
-    """Класс для создания формы YaCutForm."""
     original_link = URLField(
         label=ORIGINAL_LINK_LABEL,
         validators=[
@@ -62,8 +61,7 @@ class YaCutForm(FlaskForm):
 
     def validate_custom_id(form, custom_id_field):
         """
-        Метод экземпляра класса YaCut
-        для проверки наличия в БД полученного custom_id.
+        Проверка наличия в БД полученного custom_id.
         """
         if URLMap.get(custom_id_field.data):
             raise ValidationError(CUSTOM_ID_EXISTING_ERROR_MESSAGE.format(

@@ -72,13 +72,13 @@ class URLMap(db.Model):
         - При отсутвии короткой ссылки - вызов функции для её генерации;
         - При получении raw_data - валидация полученных данных.
         """
-        if raw_data and short:
-            if not url(original):
-                raise InvalidOriginalLinkError(
-                    ORIGINAL_VALUE_ERROR_MESSAGE.format(
-                        original=original
-                    )
+        if not url(original):
+            raise InvalidOriginalLinkError(
+                ORIGINAL_VALUE_ERROR_MESSAGE.format(
+                    original=original
                 )
+            )
+        if raw_data and short:
             if (
                 len(short) > SHORT_MAX_LENGTH or
                 not bool(findall(PATTERN, short))
