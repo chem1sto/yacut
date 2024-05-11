@@ -38,34 +38,35 @@
 
 ## **Как запустить проект:**
 1. Клонировать репозиторий и перейти в него в командной строке:
-```bash
-git clone git@github.com:chem1sto/yacut.git
-```
-```
-cd yacut
-```
-2. Cоздать и активировать виртуальное окружение:
-```bash
-python3 -m venv venv
-```
-* Если у вас Linux/MacOS
     ```bash
-    source venv/bin/activate
+    git clone git@github.com:chem1sto/yacut.git
+    ```
+    ```
+    cd yacut
+    ```
+2. Создать и активировать виртуальное окружение:
+    ```bash
+    python3 -m venv venv
+    ```
+   * Если у вас Linux/MacOS
+       ```bash
+       source venv/bin/activate
+       ```
+
+     * Если у вас windows
+         ```bash
+         source venv/scripts/activate
+         ```
+3. Установить зависимости из файла requirements.txt:
+    ```bash
+    python3 -m pip install --upgrade pip
+    ```
+    ```bash
+    pip install -r requirements.txt
+    ```
+4. Создайте БД по сценарию **migrations/** и запустите приложение:
+    ```bash
+    flask db upgrade && flask run
     ```
 
-* Если у вас windows
-    ```bash
-    source venv/scripts/activate
-    ```
-3. Установить зависимости из файла requirements.txt:
-```bash
-python3 -m pip install --upgrade pip
-```
-```bash
-pip install -r requirements.txt
-```
-4. Создайте БД по сценарию **migrations/** и запустите приложение:
-```bash
-flask db upgrade && flask run
-```
 Сервер Flask запустит приложение по адресу http://127.0.0.1:5000.
